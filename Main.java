@@ -18,6 +18,6 @@ public class Main {
 //        b.backtracking(20);
 
         Greedy g = new Greedy(procesadores, tareas);
-        g.greedy(100);
+        g.greedy(10000000);
     }
 }

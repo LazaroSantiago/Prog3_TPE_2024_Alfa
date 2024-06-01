@@ -18,6 +18,7 @@ public class Greedy {
         this.tareas = tareas;
         this.solucion = new HashMap<>(procesadores.size());
         this.tiempos = new HashMap<>(procesadores.size());
+        sinSolucion = false;
     }
 
     public void greedy(int tiempo) {
@@ -25,66 +26,23 @@ public class Greedy {
         inicializarListas(tiempo);
 
         while (!tareas.isEmpty()) {
-            //todo: se puede hacer mejor...
-            //el comportamiento depende de si la tarea es critica o no.
-            //si no es critica, es mucho mas facil
-            //si es critica... ahi tengo que elegir un procesador viable
             Tarea t = tareas.removeFirst();
 
             int indiceProcesador = getIndiceProcesadorMenosCargado();
             Procesador p = procesadores.get(indiceProcesador);
 
-            if (validarAgregar(t, p))
+            if (validarAgregar(t, p)){
                 agregarTarea(t, p);
-            else {
+            } else {
                 deathLoop(indiceProcesador, t);
-                if (sinSolucion){
-                    System.out.println("No hay solucion");
-                    return;
-                }
-            }
-           /* if (!t.esCritica()) {
-//                Procesador p = procesadorMenosCargado();
-                int indiceProcesador = indiceProcesadorMenosCargado();
-                Procesador p = procesadores.get(indiceProcesador);
-
-                if (p.estaRefrigerado()) {
-                    agregarTarea(p, t);
-                } else {
-                    if (validarAgregar(t, p)) {
-                        agregarTarea(p, t);
-                    } else {
-                        boolean dead = false;
-                        for (int i = indiceProcesador; i < procesadores.size(); i++) {
-                            if (validarAgregar(t, procesadores.get(i)))
-                                agregarTarea(p, t);
-                        }
-                        for (int i = 0; i < indiceProcesador; i++) {
-                            if (validarAgregar(t, procesadores.get(i)))
-                                agregarTarea(p, t);
-                            if (i == indiceProcesador -1)
-                                dead = true;
-                        }
-                        if (dead)
-                            System.out.println("dead");
-                    }
-                    //y si la validacion me da mal?
-                }
-
             }
 
-            //y si en vez del procesador paso la posicion y uso un arrayList?
-//            if (validarAgregar(t, p))
-//                agregarTarea(p, t);
-//            else {
-
-//            }
-*/
+            if (sinSolucion) {
+                System.out.println("No hay solucion");
+                return;
+            }
 
             //todo: asignador de tareas, procesador con su lista de tareas
-            //todo: version defensiva en caso de fallas
-            //agregar tarea devuelve un booleano.
-            //pruebo con los demas procesadores, si no puedo en ninguno, retorno
         }
 
         System.out.println(">>>>>>>>> Solucion: " + solucion);
@@ -107,66 +65,74 @@ public class Greedy {
     }
 
     private int getIndiceProcesadorMenosCargado() {
-        int result = Integer.MAX_VALUE;
-
-        for (Procesador p : procesadores) {
-            if (tiempos.get(p) < result) {
-                result = tiempos.get(p);
-            }
-        }
-
-        return result;
-    }
-
-    private Procesador procesadorMenosCargado() {
-        //se puede hacer mas inteligentemente sabiendo que:
-        //si la tarea a asignar va a ser critica puedo ignorar el procesador refri
-        //por cada procesador
         int tiempoMenor = Integer.MAX_VALUE;
-        Procesador result = null;
+        int indiceProcesador = 0;
 
-        for (Procesador p : procesadores) {
-            if (tiempos.get(p) < tiempoMenor) {
-                tiempoMenor = tiempos.get(p);
-                result = p;
+        for (int i = 0; i < procesadores.size(); i++){
+            if (tiempos.get(procesadores.get(i)) < tiempoMenor){
+                tiempoMenor = tiempos.get(procesadores.get(i));
+                indiceProcesador = i;
             }
         }
 
-        return result;
+        return indiceProcesador;
     }
 
-    private boolean validarAgregar(Tarea t, Procesador p){
-        return false;
-    }
-//    private boolean validarAgregar(Tarea t, Procesador p) {
-//        //procesador no refrigerado puede tener como limite tiempo ejecucion igual a tiempo
-//        if (!p.estaRefrigerado())
-//            if ((tiempos.get(p) + t.getTiempoEjecucion()) > tiempo)
-//                return false;
+//    private Procesador procesadorMenosCargado() {
+//        //por cada procesador
+//        int tiempoMenor = Integer.MAX_VALUE;
+//        Procesador result = null;
 //
-//        //procesador puede tener solo 2 criticas
-//        if (t.esCritica()) {
-//            LinkedList<Tarea> criticas = solucion.get(p);
-//            int countCriticas = 0;
-//
-//            for (Tarea critica : criticas)
-//                if (critica.esCritica())
-//                    countCriticas++;
-//
-//            return countCriticas >= 2;
+//        for (Procesador p : procesadores) {
+//            if (tiempos.get(p) < tiempoMenor) {
+//                tiempoMenor = tiempos.get(p);
+//                result = p;
+//            }
 //        }
 //
-//        return true;
+//        return result;
 //    }
 
-    private void deathLoop(int indiceProcesador, Tarea t){
+    private boolean validarAgregar(Tarea t, Procesador p) {
+        if (!t.esCritica() && p.estaRefrigerado())
+            return true;
+
+        if (!p.estaRefrigerado())
+            if (!validarRefrigerado(t, p))
+                return false;
+
+        if (t.esCritica()) {
+            return validarCritica(p);
+        }
+
+        return true;
+    }
+
+    private boolean validarCritica(Procesador p) {
+        LinkedList<Tarea> criticas = solucion.get(p);
+        int countCriticas = 0;
+
+        for (Tarea critica : criticas)
+            if (critica.esCritica())
+                countCriticas++;
+
+        return countCriticas < 2;
+    }
+
+    private boolean validarRefrigerado(Tarea t, Procesador p) {
+        //reviso tener tiempo disponible para agregar
+        return ((tiempos.get(p) + t.getTiempoEjecucion()) <= tiempo);
+//        return ((tiempos.get(p) + t.getTiempoEjecucion()) > tiempo);
+    }
+
+    private void deathLoop(int indiceProcesador, Tarea t) {
         //itero por el resto de los procesadores
         int size = procesadores.size();
-        for (int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             int currentIndex = (indiceProcesador + i) % size;
             Procesador procesadorActual = procesadores.get(currentIndex);
 
-            if (validarAgregar(t, procesadorActual)){
+            if (validarAgregar(t, procesadorActual)) {
                 agregarTarea(t, procesadorActual);
                 return;
             }
@@ -175,15 +141,4 @@ public class Greedy {
         sinSolucion = true;
     }
 
-    private void agregarValidado(Tarea t, Procesador p){
-        if (!t.esCritica() && p.estaRefrigerado())
-            agregarTarea(t, p);
-
-//        if (!t.esCritica() && !p.estaRefrigerado()){
-//            validarRefrigerado();
-//            validarCritica();
-//        }
-
-//        if (t.esCritica() && !p.estaRefrigerado())
-    }
 }
