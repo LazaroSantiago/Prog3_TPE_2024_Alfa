@@ -85,7 +85,7 @@ public class Backtracking {
 
     private boolean validarAgregar(Tarea t, Procesador p) {
         validarHashMapsSoluciones(p);
-
+        //todo: emprolijar validarAgregar
         //procesador no refrigerado puede tener solo 2 criticas
         //procesador no refrigerado puede tener como limite tiempo ejecucion igual a tiempo
 

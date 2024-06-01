@@ -14,10 +14,10 @@ public class Main {
         List<Tarea> tareas = servicios.getTareas();
         List<Procesador> procesadores = servicios.getProcesadores();
 
-        Backtracking b = new Backtracking(procesadores, tareas);
-        b.backtracking(20);
-//
-//        Greedy g = new Greedy(procesadores, tareas);
-//        g.greedy(100);
+//        Backtracking b = new Backtracking(procesadores, tareas);
+//        b.backtracking(20);
+
+        Greedy g = new Greedy(procesadores, tareas);
+        g.greedy(100);
     }
 }

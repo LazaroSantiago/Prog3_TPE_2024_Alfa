@@ -27,10 +27,14 @@ public class Greedy {
             //todo: se puede hacer mejor...
             //el comportamiento depende de si la tarea es critica o no.
             //si no es critica, es mucho mas facil
-            //si es critica... ahi tengo queelegir un procesador viable
+            //si es critica... ahi tengo que elegir un procesador viable
             Tarea t = tareas.removeFirst();
 
-            if (!t.esCritica()) {
+            Procesador p = procesadorMenosCargado();
+            if (validarAgregar(t, p))
+                agregarTarea(p, t);
+
+           /* if (!t.esCritica()) {
 //                Procesador p = procesadorMenosCargado();
                 int indiceProcesador = indiceProcesadorMenosCargado();
                 Procesador p = procesadores.get(indiceProcesador);
@@ -41,6 +45,7 @@ public class Greedy {
                     if (validarAgregar(t, p)) {
                         agregarTarea(p, t);
                     } else {
+                        boolean dead = false;
                         for (int i = indiceProcesador; i < procesadores.size(); i++) {
                             if (validarAgregar(t, procesadores.get(i)))
                                 agregarTarea(p, t);
@@ -48,8 +53,11 @@ public class Greedy {
                         for (int i = 0; i < indiceProcesador; i++) {
                             if (validarAgregar(t, procesadores.get(i)))
                                 agregarTarea(p, t);
+                            if (i == indiceProcesador -1)
+                                dead = true;
                         }
-                        return;
+                        if (dead)
+                            System.out.println("dead");
                     }
                     //y si la validacion me da mal?
                 }
@@ -62,7 +70,7 @@ public class Greedy {
 //            else {
 
 //            }
-
+*/
 
             //todo: asignador de tareas, procesador con su lista de tareas
             //todo: version defensiva en caso de fallas
