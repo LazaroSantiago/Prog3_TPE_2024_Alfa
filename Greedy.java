@@ -11,6 +11,7 @@ public class Greedy {
     private HashMap<Procesador, Integer> tiempos;
     private HashMap<Procesador, LinkedList<Tarea>> solucion;
     private int tiempo;
+    private boolean sinSolucion;
 
     public Greedy(List<Procesador> procesadores, List<Tarea> tareas) {
         this.procesadores = procesadores;
@@ -30,10 +31,18 @@ public class Greedy {
             //si es critica... ahi tengo que elegir un procesador viable
             Tarea t = tareas.removeFirst();
 
-            Procesador p = procesadorMenosCargado();
-            if (validarAgregar(t, p))
-                agregarTarea(p, t);
+            int indiceProcesador = getIndiceProcesadorMenosCargado();
+            Procesador p = procesadores.get(indiceProcesador);
 
+            if (validarAgregar(t, p))
+                agregarTarea(t, p);
+            else {
+                deathLoop(indiceProcesador, t);
+                if (sinSolucion){
+                    System.out.println("No hay solucion");
+                    return;
+                }
+            }
            /* if (!t.esCritica()) {
 //                Procesador p = procesadorMenosCargado();
                 int indiceProcesador = indiceProcesadorMenosCargado();
@@ -89,7 +98,7 @@ public class Greedy {
         }
     }
 
-    private void agregarTarea(Procesador p, Tarea t) {
+    private void agregarTarea(Tarea t, Procesador p) {
         solucion.get(p).add(t);
 
         Integer tiempoProcesador = this.tiempos.get(p);
@@ -97,7 +106,7 @@ public class Greedy {
         this.tiempos.put(p, tiempoProcesador);
     }
 
-    private int indiceProcesadorMenosCargado() {
+    private int getIndiceProcesadorMenosCargado() {
         int result = Integer.MAX_VALUE;
 
         for (Procesador p : procesadores) {
@@ -126,24 +135,55 @@ public class Greedy {
         return result;
     }
 
-    private boolean validarAgregar(Tarea t, Procesador p) {
-        //procesador no refrigerado puede tener como limite tiempo ejecucion igual a tiempo
-        if (!p.estaRefrigerado())
-            if ((tiempos.get(p) + t.getTiempoEjecucion()) > tiempo)
-                return false;
+    private boolean validarAgregar(Tarea t, Procesador p){
+        return false;
+    }
+//    private boolean validarAgregar(Tarea t, Procesador p) {
+//        //procesador no refrigerado puede tener como limite tiempo ejecucion igual a tiempo
+//        if (!p.estaRefrigerado())
+//            if ((tiempos.get(p) + t.getTiempoEjecucion()) > tiempo)
+//                return false;
+//
+//        //procesador puede tener solo 2 criticas
+//        if (t.esCritica()) {
+//            LinkedList<Tarea> criticas = solucion.get(p);
+//            int countCriticas = 0;
+//
+//            for (Tarea critica : criticas)
+//                if (critica.esCritica())
+//                    countCriticas++;
+//
+//            return countCriticas >= 2;
+//        }
+//
+//        return true;
+//    }
 
-        //procesador puede tener solo 2 criticas
-        if (t.esCritica()) {
-            LinkedList<Tarea> criticas = solucion.get(p);
-            int countCriticas = 0;
+    private void deathLoop(int indiceProcesador, Tarea t){
+        //itero por el resto de los procesadores
+        int size = procesadores.size();
+        for (int i = 0; i < size; i++){
+            int currentIndex = (indiceProcesador + i) % size;
+            Procesador procesadorActual = procesadores.get(currentIndex);
 
-            for (Tarea critica : criticas)
-                if (critica.esCritica())
-                    countCriticas++;
-
-            return countCriticas >= 2;
+            if (validarAgregar(t, procesadorActual)){
+                agregarTarea(t, procesadorActual);
+                return;
+            }
         }
+        //si no pude agregar en ninguna instancia, corto toda la ejecucion
+        sinSolucion = true;
+    }
 
-        return true;
+    private void agregarValidado(Tarea t, Procesador p){
+        if (!t.esCritica() && p.estaRefrigerado())
+            agregarTarea(t, p);
+
+//        if (!t.esCritica() && !p.estaRefrigerado()){
+//            validarRefrigerado();
+//            validarCritica();
+//        }
+
+//        if (t.esCritica() && !p.estaRefrigerado())
     }
 }
