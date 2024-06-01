@@ -22,7 +22,9 @@ public class Greedy {
     }
 
     public void greedy(int tiempo) {
-        //validar solucion posible
+        if (noHaySolucion())
+            return;
+
         inicializarListas(tiempo);
 
         while (!tareas.isEmpty()) {
@@ -42,7 +44,6 @@ public class Greedy {
                 return;
             }
 
-            //todo: asignador de tareas, procesador con su lista de tareas
         }
 
         System.out.println(">>>>>>>>> Solucion: " + solucion);
@@ -77,21 +78,6 @@ public class Greedy {
 
         return indiceProcesador;
     }
-
-//    private Procesador procesadorMenosCargado() {
-//        //por cada procesador
-//        int tiempoMenor = Integer.MAX_VALUE;
-//        Procesador result = null;
-//
-//        for (Procesador p : procesadores) {
-//            if (tiempos.get(p) < tiempoMenor) {
-//                tiempoMenor = tiempos.get(p);
-//                result = p;
-//            }
-//        }
-//
-//        return result;
-//    }
 
     private boolean validarAgregar(Tarea t, Procesador p) {
         if (!t.esCritica() && p.estaRefrigerado())
@@ -141,4 +127,7 @@ public class Greedy {
         sinSolucion = true;
     }
 
+    private boolean noHaySolucion() {
+        return (Tarea.getCountCriticas() / 2) > procesadores.size();
+    }
 }

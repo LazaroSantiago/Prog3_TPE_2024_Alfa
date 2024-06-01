@@ -28,6 +28,9 @@ public class Backtracking {
     }
 
     public void backtracking(int tiempo) {
+        if (noHaySolucion())
+            return;
+
         this.tiempo = tiempo;
         backtracking();
         System.out.println(">>>>>>>>> Solucion: " + solucionFinal);
@@ -36,9 +39,9 @@ public class Backtracking {
 
     public void backtracking() {
         if (tareas.isEmpty()) {
-            if (solucionActualEsMejor()) {
+            if (solucionActualEsMejor())
                 this.deepCopy();
-            }
+
         } else {
             Tarea t = tareas.removeFirst();
 
@@ -83,9 +86,14 @@ public class Backtracking {
         this.tiemposSolucionActual.put(p, tiempoProcesador);
     }
 
+    private boolean noHaySolucion() {
+        return (Tarea.getCountCriticas() / 2) > procesadores.size();
+    }
+
+    //todo: emprolijar validarAgregar
+    //copialo del greedy
     private boolean validarAgregar(Tarea t, Procesador p) {
         validarHashMapsSoluciones(p);
-        //todo: emprolijar validarAgregar
         //procesador no refrigerado puede tener solo 2 criticas
         //procesador no refrigerado puede tener como limite tiempo ejecucion igual a tiempo
 
@@ -111,19 +119,6 @@ public class Backtracking {
         }
 
         return true;
-        /*
-        if (!p.estaRefrigerado() && t.esCritica()){
-            if ((tiemposSolucionActual.get(p) + t.getTiempoEjecucion()) > tiempo)
-                return false;
-            LinkedList<Tarea> criticas = solucionActual.get(p);
-            int countCriticas = 0;
-
-            for (Tarea critica : criticas)
-                if (critica.esCritica())
-                    countCriticas++;
-
-            return countCriticas < 2;
-        }*/
     }
 
     private void validarHashMapsSoluciones(Procesador p) {

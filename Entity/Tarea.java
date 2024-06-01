@@ -1,11 +1,12 @@
 package Entity;
 
 public class Tarea {
-    String idTarea;
-    String nombreTarea;
-    int tiempoEjecucion;
-    boolean esCritica;
-    int nivelPrioridad;
+    private String idTarea;
+    private String nombreTarea;
+    private int tiempoEjecucion;
+    private boolean esCritica;
+    private int nivelPrioridad;
+    private static int countCriticas = 0;
 
     public Tarea(String idTarea, String nombreTarea, int tiempoEjecucion, boolean esCritica, int nivelPrioridad) {
         this.idTarea = idTarea;
@@ -13,6 +14,8 @@ public class Tarea {
         this.tiempoEjecucion = tiempoEjecucion;
         this.esCritica = esCritica;
         this.setNivelPrioridad(nivelPrioridad);
+        if (this.esCritica)
+            countCriticas++;
     }
 
     public String getIdTarea() {
@@ -42,6 +45,10 @@ public class Tarea {
             this.nivelPrioridad = 1;
         else
             this.nivelPrioridad = nivelPrioridad;
+    }
+
+    public static int getCountCriticas(){
+        return countCriticas;
     }
 
     @Override

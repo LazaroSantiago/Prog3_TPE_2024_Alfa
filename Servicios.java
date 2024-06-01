@@ -5,14 +5,16 @@ import Factory.TareaFactory;
 import Helper.CSVHelper;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Servicios {
-    List<Procesador> procesadores;
-    List<Tarea> tareas;
+    private List<Procesador> procesadores;
+    private List<Tarea> tareas;
+    private int countTareasCriticas;
     //y si cuando cargo las listas creo tambien los indices que necesite?
     //por ejemplo, cantidad de tareas criticas y proces no-refri
-    //todo: solucion seguramente sea un hashmap de tamaño igual a la lista de proces, con una linked list de tareas
+
     //todo: explicar el trade-off de complejidad en casa servicio
     /*
      * Complejidad temporal:
@@ -24,16 +26,13 @@ public class Servicios {
 
         this.procesadores = helperProcesador.crearLista(pathProcesadores);
         this.tareas = helperTarea.crearLista(pathTareas);
+        this.countTareasCriticas = TareaFactory.getCountCriticas();
     }
 
-    /*
-     * Complejidad temporal:
+    /* Complejidad temporal:
      * O(n)
-     */
+     * aunque se puede cambiar la estructura a un hashset para que sea O(1) */
     public Tarea servicio1(String ID) {
-        //se puede cambiar la estructura a un hashset para que sea O(1)
-        //todo: ver si combiene pasar a hashset
-
         for (Tarea t : tareas)
             if (t.getIdTarea().equals(ID))
                 return t;
@@ -46,7 +45,7 @@ public class Servicios {
      * O(n)
      */
     public List<Tarea> servicio2(boolean esCritica) {
-        List<Tarea> result = new ArrayList<>();
+        List<Tarea> result = new LinkedList<>();
 
         for (Tarea t : tareas)
             if (t.esCritica() == esCritica)

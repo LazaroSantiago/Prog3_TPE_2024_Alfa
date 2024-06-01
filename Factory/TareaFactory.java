@@ -4,12 +4,15 @@ import Entity.Tarea;
 
 public class TareaFactory implements Factory<Tarea>{
     private static TareaFactory instance;
+    private static int countCriticas = 0;
+
 
     private TareaFactory(){};
 
     public static TareaFactory getInstance(){
-        if (instance==null)
+        if (instance==null){
             instance = new TareaFactory();
+        }
         return instance;
     }
 
@@ -26,5 +29,9 @@ public class TareaFactory implements Factory<Tarea>{
         int nivelPrioridad = Integer.parseInt(values[4]);
 
         return new Tarea(idTarea, nombreTarea, tiempoEjecucion, esCritica, nivelPrioridad);
+    }
+
+    public static int getCountCriticas() {
+        return countCriticas;
     }
 }
