@@ -111,8 +111,13 @@ public class ProcesadorRedux {
         return ((tiempoEjecucionProcesador + t.getTiempoEjecucion()) <= tiempo);
     }
 
+    public int getCountTareasAsignadas(){
+        return this.tareasAsignadas.size();
+    }
+
     @Override
     public String toString() {
         return "\nProcesador: " + idProcesador + ". " + "Tareas: " + tareasAsignadas;
     }
+
 }

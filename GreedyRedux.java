@@ -5,22 +5,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GreedyRedux implements SolucionadorAbstracto {
-    //todo: pensar en nombre mejor que deathloop...
-
     List<ProcesadorRedux> procesadores;
     List<Tarea> tareas;
     private boolean sinSolucion;
+    private int countCandidatos;
 
     public GreedyRedux(List<ProcesadorRedux> procesadores, List<Tarea> tareas) {
         this.procesadores = procesadores;
         this.tareas = tareas;
-        sinSolucion = noHaySolucion();
     }
 
+    private boolean agregarTarea(Tarea t, ProcesadorRedux p) {
+        countCandidatos++;
+        return p.agregarTarea(t);
+    }
+
+    //complejidad O(n*m) siendo n la cantidad de tareas y m la cantidad de procesadores
     public boolean greedy(int tiempo) {
-        if (sinSolucion)
+        if (noHaySolucion())
             return false;
 
+        countCandidatos = 0;
         ProcesadorRedux.setTiempo(tiempo);
 
         while (!tareas.isEmpty()) {
@@ -29,9 +34,8 @@ public class GreedyRedux implements SolucionadorAbstracto {
             int indiceProcesador = getIndiceProcesadorMenosCargado();
             ProcesadorRedux p = procesadores.get(indiceProcesador);
 
-            if (!p.agregarTarea(t))
-                sinSolucion = deathLoop(indiceProcesador, t);
-
+            if (!agregarTarea(t, p))
+                sinSolucion = seleccionar(indiceProcesador, t);
         }
 
         return !sinSolucion;
@@ -47,7 +51,7 @@ public class GreedyRedux implements SolucionadorAbstracto {
                 indiceProcesador = i;
             }
         }
-        System.out.println(indiceProcesador);
+
         return indiceProcesador;
     }
 
@@ -64,19 +68,27 @@ public class GreedyRedux implements SolucionadorAbstracto {
         return tiempoMayor;
     }
 
-    private boolean deathLoop(int indiceProcesador, Tarea t) {
-        //itero por el resto de los procesadores
+    private boolean seleccionar(int indiceProcesador, Tarea t) {
+        //iterar por el resto de los procesadores
+            //si en ninguna instancia se pudo agregar,
+                //retornar false
+            //si se pudo
+                //retornar true
+
         int size = procesadores.size();
         for (int i = 0; i < size; i++) {
             int currentIndex = (indiceProcesador + i) % size;
             ProcesadorRedux procesadorActual = procesadores.get(currentIndex);
 
-            if (procesadorActual.agregarTarea(t)) {
+            if (agregarTarea(t, procesadorActual))
                 return false;
-            }
         }
 
         return true;
+    }
+
+    public int getCountCandidatos(){
+        return this.countCandidatos;
     }
 
     @Override
@@ -90,6 +102,9 @@ public class GreedyRedux implements SolucionadorAbstracto {
 
     @Override
     public String toString() {
+        if (sinSolucion)
+            return "No hay solucion";
+
         return "Greedy" +
                 procesadores +
                 "\nTiempo Final = " + getTiempoFinal();

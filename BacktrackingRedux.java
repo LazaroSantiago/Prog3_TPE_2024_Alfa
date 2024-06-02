@@ -13,6 +13,9 @@ public class BacktrackingRedux implements SolucionadorAbstracto {
 
     private int tiempoActual;
     private int tiempoFinal;
+    private boolean sinSolucion;
+    private int countEstados;
+
 
     public BacktrackingRedux(List<ProcesadorRedux> procesadores, List<Tarea> tareas) {
         this.procesadores = procesadores;
@@ -27,12 +30,29 @@ public class BacktrackingRedux implements SolucionadorAbstracto {
         if (noHaySolucion())
             return false;
 
+        int countTareas = this.tareas.size();
+        int countEstados = 0;
+
         ProcesadorRedux.setTiempo(tiempo);
         backtracking();
-        return true;
+
+        sinSolucion = !verificarSolucion(countTareas);
+        return sinSolucion;
     }
 
-    public void backtracking() {
+    private boolean verificarSolucion(int countTareas){
+        //si se llego a una solucion valida,
+        //la cantidad de tareas en solucion final
+        //deberia ser igual a la cantidad de tareas con las que se empezo
+        int countTareasAsignadas = 0;
+
+        for (ProcesadorRedux p : solucionFinal)
+            countTareasAsignadas += p.getCountTareasAsignadas();
+
+        return countTareasAsignadas == countTareas;
+    }
+
+    private void backtracking() {
         if (tareas.isEmpty()) {
             if (solucionActualEsMejor()) {
                 this.deepCopy();
@@ -44,9 +64,10 @@ public class BacktrackingRedux implements SolucionadorAbstracto {
                 solucionActual.add(p);
 
                 if (p.agregarTarea(t)) {
-                    if (solucionActualEsMejor())
+                    if (solucionActualEsMejor()){
+                        countEstados++;
                         backtracking();
-
+                    }
                     p.quitarTarea();
                 }
             }
@@ -92,8 +113,15 @@ public class BacktrackingRedux implements SolucionadorAbstracto {
         return this.tiempoFinal;
     }
 
+    public int getCountEstados(){
+        return this.countEstados;
+    }
+
     @Override
     public String toString() {
+        if (sinSolucion)
+            return "No hay solucion";
+
         return "Backtracking" +
                 solucionFinal +
                 "\nTiempo Final = " + tiempoFinal;
