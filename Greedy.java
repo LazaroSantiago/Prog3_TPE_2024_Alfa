@@ -1,4 +1,5 @@
 import Entity.Procesador;
+import Entity.ProcesadorRedux;
 import Entity.Tarea;
 
 import java.util.HashMap;

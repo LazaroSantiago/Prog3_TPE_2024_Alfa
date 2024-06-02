@@ -7,8 +7,6 @@ public class Backtracking {
     private List<Procesador> procesadores;
     private List<Tarea> tareas;
 
-    //todo: pasar esto al procesador
-        //en vez de un hashmap de procesadores, tene un arreglo u otra cosa
     private HashMap<Procesador, LinkedList<Tarea>> solucionActual;
     private HashMap<Procesador, LinkedList<Tarea>> solucionFinal;
     private HashMap<Procesador, Integer> tiemposSolucionActual;
@@ -91,8 +89,6 @@ public class Backtracking {
         return (Tarea.getCountCriticas() / 2) > procesadores.size();
     }
 
-    //todo: emprolijar validarAgregar
-    //copialo del greedy
     private boolean validarAgregar(Tarea t, Procesador p) {
         validarHashMapsSoluciones(p);
         //procesador no refrigerado puede tener solo 2 criticas
@@ -107,7 +103,6 @@ public class Backtracking {
             return false;
 
         //finalmente, como es una operacion mas cara, reviso que haya menos de 2 tareas criticas asignadas a ese procesador
-        //todo: estructura para reducir este costo, explicar que se puede hacer un indice para reducir el costo
         if (t.esCritica()) {
             LinkedList<Tarea> criticas = solucionActual.get(p);
             int countCriticas = 0;
