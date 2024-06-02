@@ -1,4 +1,5 @@
 import Entity.Procesador;
+import Entity.ProcesadorRedux;
 import Entity.Tarea;
 import Factory.ProcesadorFactory;
 import Factory.TareaFactory;
@@ -9,7 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Servicios {
-    private List<Procesador> procesadores;
+    private List<ProcesadorRedux> procesadores;
     private List<Tarea> tareas;
     private int countTareasCriticas;
     //y si cuando cargo las listas creo tambien los indices que necesite?
@@ -21,7 +22,7 @@ public class Servicios {
      * O(n)
      */
     public Servicios(String pathProcesadores, String pathTareas) {
-        CSVHelper<Procesador> helperProcesador = new CSVHelper<Procesador>(ProcesadorFactory.getInstance());
+        CSVHelper<ProcesadorRedux> helperProcesador = new CSVHelper<ProcesadorRedux>(ProcesadorFactory.getInstance());
         CSVHelper<Tarea> helperTarea = new CSVHelper<Tarea>(TareaFactory.getInstance());
 
         this.procesadores = helperProcesador.crearLista(pathProcesadores);
@@ -69,7 +70,7 @@ public class Servicios {
         return result;
     }
 
-    public List<Procesador> getProcesadores() {
+    public List<ProcesadorRedux> getProcesadores() {
         return procesadores;
     }
 

@@ -1,8 +1,9 @@
 package Factory;
 
 import Entity.Procesador;
+import Entity.ProcesadorRedux;
 
-public class ProcesadorFactory implements Factory<Procesador>{
+public class ProcesadorFactory implements Factory<ProcesadorRedux>{
     private static ProcesadorFactory instance;
 
     private ProcesadorFactory(){};
@@ -14,17 +15,17 @@ public class ProcesadorFactory implements Factory<Procesador>{
     }
 
     @Override
-    public Procesador create(String[] values) {
+    public ProcesadorRedux create(String[] values) {
         return createProccesador(values);
     }
 
-    private Procesador createProccesador(String[] values) {
+    private ProcesadorRedux createProccesador(String[] values) {
         String idProcesador = values[0];
         String codigoProcesador = values[1];
         boolean estaRefrigerado = Boolean.parseBoolean(values[2]);
         int anioFuncionamiento = Integer.parseInt(values[3]);
 
-        return new Procesador(idProcesador, codigoProcesador , estaRefrigerado, anioFuncionamiento);
+        return new ProcesadorRedux(idProcesador, codigoProcesador , estaRefrigerado, anioFuncionamiento);
     }
 
 }

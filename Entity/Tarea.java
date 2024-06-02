@@ -53,7 +53,6 @@ public class Tarea {
 
     @Override
     public String toString() {
-        return "idTarea: " + idTarea +
-                ", tiempo: " + tiempoEjecucion;
+        return idTarea + ", tiempo: " + tiempoEjecucion;
     }
 }

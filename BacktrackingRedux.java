@@ -1,29 +1,26 @@
 import Entity.Procesador;
+import Entity.ProcesadorRedux;
 import Entity.Tarea;
 
 import java.util.*;
 
-public class Backtracking {
-    private List<Procesador> procesadores;
+public class BacktrackingRedux {
+    private List<ProcesadorRedux> procesadores;
     private List<Tarea> tareas;
 
     //todo: pasar esto al procesador
-        //en vez de un hashmap de procesadores, tene un arreglo u otra cosa
-    private HashMap<Procesador, LinkedList<Tarea>> solucionActual;
-    private HashMap<Procesador, LinkedList<Tarea>> solucionFinal;
-    private HashMap<Procesador, Integer> tiemposSolucionActual;
+    //en vez de un hashmap de procesadores, tene un arreglo u otra cosa
+    private ArrayList<ProcesadorRedux> solucionFinal;
+    private HashSet<ProcesadorRedux> solucionActual;
 
     private int tiempoActual;
     private int tiempoFinal;
-    private int tiempo;
 
-
-    public Backtracking(List<Procesador> procesadores, List<Tarea> tareas) {
+    public BacktrackingRedux(List<ProcesadorRedux> procesadores, List<Tarea> tareas) {
         this.procesadores = procesadores;
         this.tareas = tareas;
-        this.solucionFinal = new HashMap<>(procesadores.size());
-        this.solucionActual = new HashMap<>(procesadores.size());
-        this.tiemposSolucionActual = new HashMap<>(procesadores.size());
+        this.solucionFinal = new ArrayList<>(procesadores.size());
+        this.solucionActual = new HashSet<>();
         this.tiempoFinal = Integer.MAX_VALUE;
         this.tiempoActual = 0;
     }
@@ -32,13 +29,35 @@ public class Backtracking {
         if (noHaySolucion())
             return;
 
-        this.tiempo = tiempo;
+        ProcesadorRedux.setTiempo(tiempo);
         backtracking();
         System.out.println(">>>>>>>>> Solucion: " + solucionFinal);
         System.out.println("tiempo final: " + tiempoFinal);
     }
 
     public void backtracking() {
+        if (tareas.isEmpty()) {
+            if (solucionActualEsMejor()) {
+                this.deepCopy();
+            }
+        } else {
+            Tarea t = tareas.removeFirst();
+
+            for (ProcesadorRedux p : procesadores) {
+                solucionActual.add(p);
+
+                if (p.agregarTarea(t)) {
+                    if (solucionActualEsMejor())
+                        backtracking();
+
+                    p.quitarTarea();
+                }
+            }
+            tareas.addFirst(t);
+        }
+    }
+
+    /*public void backtracking() {
         if (tareas.isEmpty()) {
             if (solucionActualEsMejor())
                 this.deepCopy();
@@ -87,9 +106,7 @@ public class Backtracking {
         this.tiemposSolucionActual.put(p, tiempoProcesador);
     }
 
-    private boolean noHaySolucion() {
-        return (Tarea.getCountCriticas() / 2) > procesadores.size();
-    }
+
 
     //todo: emprolijar validarAgregar
     //copialo del greedy
@@ -129,31 +146,33 @@ public class Backtracking {
             this.tiemposSolucionActual.put(p, 0);
         }
     }
+*/
 
     private boolean solucionActualEsMejor() {
-        //obtener tiempo mayor de mi solucion actual
-        Collection<Integer> tiempos = tiemposSolucionActual.values();
+        //obtener tiempo mayor de solucion actual
         int tiempoMayor = 0;
 
-        for (Integer i : tiempos)
-            if (i > tiempoMayor)
-                tiempoMayor = i;
+        for (ProcesadorRedux p : solucionActual) {
+            int tiempoProcesador = p.getTiempoEjecucionProcesador();
+            if (tiempoProcesador > tiempoMayor)
+                tiempoMayor = tiempoProcesador;
+        }
 
         this.tiempoActual = tiempoMayor;
-
         return tiempoActual < tiempoFinal;
     }
 
     private void deepCopy() {
         this.solucionFinal.clear();
+        this.solucionFinal = new ArrayList<>(solucionActual.size());
+        for (ProcesadorRedux p : solucionActual) {
+            this.solucionFinal.add(new ProcesadorRedux(p));
+        }
 
-        HashMap<Procesador, LinkedList<Tarea>> copy = new HashMap<>();
-        for (Map.Entry<Procesador, LinkedList<Tarea>> entry : solucionActual.entrySet())
-            copy.put(entry.getKey(), new LinkedList<>(entry.getValue()));
-
-        this.tiempoFinal = tiempoActual;
-
-        this.solucionFinal = copy;
+        this.tiempoFinal = this.tiempoActual;
     }
 
+    private boolean noHaySolucion() {
+        return (Tarea.getCountCriticas() / 2) > procesadores.size();
+    }
 }
