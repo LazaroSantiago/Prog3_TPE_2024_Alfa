@@ -7,6 +7,9 @@ public class Main {
     public static void main(String[] args) {
         //todo: testear mas casos
         //todo: agregar verificacion al final que compruebe que la cantidad de tareas asignadas sea igual a la cantidad de tareas al principio. Si no, retornar error.
+        //todo: imitar la estructura de presentacion de datos que muestran en el TPE
+        //todo: contar cantidad de estados y candidatos en ambas soluciones
+
         Servicios servicios = new Servicios("./datasets/Procesadores.csv", "./datasets/Tareas.csv");
         List<Tarea> tareas = servicios.getTareas();
         List<ProcesadorRedux> procesadores = servicios.getProcesadores();
